@@ -1,222 +1,53 @@
 <?php
 session_start();
 
+include 'personnages/personnage.php';
+include 'personnages/guerrier.php';
+include 'personnages/mage.php';
+include 'personnages/archer.php';
+include 'personnages/pretre.php';
+
 // Variable de session pour suivre si les classes ont été choisies
 if (!isset($_SESSION['classes_choisies'])) {
     $_SESSION['classes_choisies'] = false;
 }
 
-class Personnage
-{
-    // Attributs
-    public $hp;
-    public $damage;
-    public $attaqueSpecialeUtilisee;
-
-    // Constructeur
-    public function __construct($hp, $damage)
-    {
-        $this->hp = $hp;
-        $this->damage = $damage;
-
-        // Limitation à 1 Attaque speciale par combat
-        $this->attaqueSpecialeUtilisee = false;
-    }
-
-    // Méthode pour calculer les dégâts
-    public function attaquer($adversaire)
-    {
-        $adversaire->hp -= $this->damage;
-    }
-
-    // Méthode pour vérifier si le personnage est en vie
-    public function estVivant()
-    {
-        return $this->hp > 0;
-    }
-
-    // Méthode pour réinitialiser une partie
-    public function reinitialiser()
-    {
-        $this->hp = 100;
-        $this->attaqueSpecialeUtilisee = false;
-    }
-}
-
-class Guerrier extends Personnage
-{
-    // Attributs
-    public $coupEpée;
-
-    // Constructeur
-    public function __construct($hp, $damage, $coupEpée)
-    {
-        parent::__construct($hp, $damage);
-        $this->coupEpée = $coupEpée;
-    }
-
-    // Méthode pour l'attaque spéciale
-    public function attaquerSpecial($adversaire)
-    {
-        $adversaire->hp -= $this->coupEpée;
-    }
-
-    // Méthode pour obtenir le nom de l'attaque spéciale
-    public function nomAttaqueSpeciale()
-    {
-        return "Coup d'épée";
-    }
-    // Méthode pour utiliser l'attaque spéciale une seule fois
-    public function utiliserAttaqueSpeciale($adversaire)
-    {
-        if (!$this->attaqueSpecialeUtilisee) {
-            $this->attaquerSpecial($adversaire);
-            $this->attaqueSpecialeUtilisee = true;
-        }
-    }
-
-}
-
-class Mage extends Personnage
-{
-    // Attributs
-    public $bouleDeFeu;
-
-    // Constructeur
-    public function __construct($hp, $damage, $bouleDeFeu)
-    {
-        parent::__construct($hp, $damage);
-        $this->bouleDeFeu = $bouleDeFeu;
-    }
-
-    // Méthode pour l'attaque spéciale
-    public function attaquerSpecial($adversaire)
-    {
-        $adversaire->hp -= $this->bouleDeFeu;
-    }
-
-    // Méthode pour obtenir le nom de l'attaque spéciale
-    public function nomAttaqueSpeciale()
-    {
-        return "Boule de feu";
-    }
-
-    // Méthode pour utiliser l'attaque spéciale une seule fois
-    public function utiliserAttaqueSpeciale($adversaire)
-    {
-        if (!$this->attaqueSpecialeUtilisee) {
-            $this->attaquerSpecial($adversaire);
-            $this->attaqueSpecialeUtilisee = true;
-        }
-    }
-
-}
-
-class Archer extends Personnage
-{
-    // Attributs
-    public $tirMortel;
-
-    // Constructeur
-    public function __construct($hp, $damage, $tirMortel)
-    {
-        parent::__construct($hp, $damage);
-        $this->tirMortel = $tirMortel;
-    }
-
-    // Méthode pour l'attaque spéciale
-    public function attaquerSpecial($adversaire)
-    {
-        $adversaire->hp -= $this->tirMortel;
-    }
-
-    // Méthode pour obtenir le nom de l'attaque spéciale
-    public function nomAttaqueSpeciale()
-    {
-        return "Tir Mortel";
-    }
-
-    // Méthode pour utiliser l'attaque spéciale une seule fois
-    public function utiliserAttaqueSpeciale($adversaire)
-    {
-        if (!$this->attaqueSpecialeUtilisee) {
-            $this->attaquerSpecial($adversaire);
-            $this->attaqueSpecialeUtilisee = true;
-        }
-    }
-
-}
-
-class Prêtre extends Personnage
-{
-    // Attributs
-    public $prièreFuneste;
-
-    // Constructeur
-    public function __construct($hp, $damage, $prièreFuneste)
-    {
-        parent::__construct($hp, $damage);
-        $this->prièreFuneste = $prièreFuneste;
-    }
-
-    // Méthode pour l'attaque spéciale
-    public function attaquerSpecial($adversaire)
-    {
-        $adversaire->hp -= $this->prièreFuneste;
-    }
-
-    // Méthode pour obtenir le nom de l'attaque spéciale
-    public function nomAttaqueSpeciale()
-    {
-        return "Prière funeste";
-    }
-
-    // Méthode pour utiliser l'attaque spéciale une seule fois
-    public function utiliserAttaqueSpeciale($adversaire)
-    {
-        if (!$this->attaqueSpecialeUtilisee) {
-            $this->attaquerSpecial($adversaire);
-            $this->attaqueSpecialeUtilisee = true;
-        }
-    }
-
-}
 
 // Instanciation des joueurs
 $joueur1 = isset($_SESSION['joueur1']) ? $_SESSION['joueur1'] : null;
 $joueur2 = isset($_SESSION['joueur2']) ? $_SESSION['joueur2'] : null;
 
 // Vérification de la soumission du formulaire de sélection de classes
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['choisir_classes'])) {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['lancer_combat'])) {
     $classe_joueur1 = $_POST['joueur1_classe'];
     $classe_joueur2 = $_POST['joueur2_classe'];
 
     // Instanciation des joueurs en fonction des classes sélectionnées
     if ($classe_joueur1 === 'Guerrier') {
-        $joueur1 = new Guerrier(100, 5, 10);
+        $joueur1 = new Guerrier(175, 15, 30);
     } 
     elseif ($classe_joueur1 === 'Mage') {
-        $joueur1 = new Mage(50, 10, 20);
+        $joueur1 = new Mage(100, 25, 50);
     }
     elseif ($classe_joueur1 === 'Archer') {
-        $joueur1 = new Archer(75, 8, 15);
+        $joueur1 = new Archer(150, 20, 40);
     }
-    elseif ($classe_joueur1 === 'Prêtre') {
-        $joueur1 = new Prêtre(60, 9, 18);
+    elseif ($classe_joueur1 === 'Pretre') {
+        $joueur1 = new Pretre(125, 10, 20);
     }
 
     if ($classe_joueur2 === 'Guerrier') {
-        $joueur2 = new Guerrier(100, 5, 10);
-    } elseif ($classe_joueur2 === 'Mage') {
-        $joueur2 = new Mage(50, 10, 20);
+        $joueur2 = new Guerrier(175, 15, 30);
+    } 
+    elseif ($classe_joueur2 === 'Mage') {
+        $joueur2 = new Mage(100, 25, 50);
     }
     elseif ($classe_joueur2 === 'Archer') {
-        $joueur2 = new Archer(75, 8, 15);
+        $joueur2 = new Archer(150, 20, 40);
     }
-    elseif ($classe_joueur2 === 'Prêtre') {
-        $joueur2 = new Prêtre(60, 9, 18);
+    elseif ($classe_joueur2 === 'Pretre') {
+        $joueur2 = new Pretre(125, 10, 20);
     }
-    
 
     // Marquer que les classes ont été choisies dans la variable de session
     $_SESSION['classes_choisies'] = true;
@@ -289,13 +120,7 @@ if ($joueur1 && $joueur2) {
         }
     }
 }
-// // Si l'un des joueurs est mort, désactiver tous les boutons d'attaque
-// if (!$joueur1->estVivant() || !$joueur2->estVivant()) {
-//     $attaque_joueur1_disabled = 'disabled';
-//     $attaque_joueur2_disabled = 'disabled';
-//     $attaque_special_joueur1_disabled = 'disabled';
-//     $attaque_special_joueur2_disabled = 'disabled';
-// }
+
 // Sauvegardez les joueurs dans la session
 $_SESSION['joueur1'] = $joueur1;
 $_SESSION['joueur2'] = $joueur2;
@@ -330,7 +155,7 @@ if ($joueur1 && $joueur2 && (!$joueur1->estVivant() || !$joueur2->estVivant())) 
                     <option value="Guerrier">Guerrier</option>
                     <option value="Mage">Mage</option>
                     <option value="Archer">Archer</option>
-                    <option value="Prêtre">Prêtre</option>
+                    <option value="Pretre">Prêtre</option>
                 </select>
                 <br>
                 <label for="joueur2_classe">Classe du Joueur 2:</label>
@@ -338,30 +163,30 @@ if ($joueur1 && $joueur2 && (!$joueur1->estVivant() || !$joueur2->estVivant())) 
                     <option value="Guerrier">Guerrier</option>
                     <option value="Mage">Mage</option>
                     <option value="Archer">Archer</option>
-                    <option value="Prêtre">Prêtre</option>
+                    <option value="Pretre">Prêtre</option>
                 </select>
                 <br>
-                <button type="submit" name="choisir_classes">Choisir Classes</button>
+                <button type="submit" name="lancer_combat">Lancer le combat</button>
             </fieldset>
         </form>
     <?php endif; ?>
 
     <?php if ($joueur1 && $joueur2) : ?>
         <form method="post">
-    <fieldset>
-        <legend>Joueur 1</legend>
-        <button type="submit" name="attaque_joueur1" <?php echo isset($attaque_joueur1_disabled) ? 'disabled' : ''; ?>>Attaque de base</button>
-        <button type="submit" name="attaque_speciale_joueur1" <?php echo (isset($attaque_special_joueur1_disabled) || $joueur1->attaqueSpecialeUtilisee) ? 'disabled' : ''; ?>><?php echo $joueur1->nomAttaqueSpeciale(); ?></button>
-    </fieldset>
-</form>
+            <fieldset>
+                <legend>Joueur 1</legend>
+                <button type="submit" name="attaque_joueur1" <?php echo isset($attaque_joueur1_disabled) ? 'disabled' : ''; ?>>Attaque de base</button>
+                <button type="submit" name="attaque_speciale_joueur1" <?php echo (isset($attaque_special_joueur1_disabled) || $joueur1->attaqueSpecialeUtilisee) ? 'disabled' : ''; ?>><?php echo $joueur1->nomAttaqueSpeciale(); ?></button>
+            </fieldset>
+        </form>
 
-<form method="post">
-    <fieldset>
-        <legend>Joueur 2</legend>
-        <button type="submit" name="attaque_joueur2" <?php echo isset($attaque_joueur2_disabled) ? 'disabled' : ''; ?>>Attaque de base</button>
-        <button type="submit" name="attaque_speciale_joueur2" <?php echo (isset($attaque_special_joueur2_disabled) || $joueur2->attaqueSpecialeUtilisee) ? 'disabled' : ''; ?>><?php echo $joueur2->nomAttaqueSpeciale(); ?></button>
-    </fieldset>
-</form>
+        <form method="post">
+            <fieldset>
+                <legend>Joueur 2</legend>
+                <button type="submit" name="attaque_joueur2" <?php echo isset($attaque_joueur2_disabled) ? 'disabled' : ''; ?>>Attaque de base</button>
+                <button type="submit" name="attaque_speciale_joueur2" <?php echo (isset($attaque_special_joueur2_disabled) || $joueur2->attaqueSpecialeUtilisee) ? 'disabled' : ''; ?>><?php echo $joueur2->nomAttaqueSpeciale(); ?></button>
+            </fieldset>
+        </form>
     <div>
         <?php
         // Affichage des points de vie
