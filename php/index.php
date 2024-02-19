@@ -1,11 +1,11 @@
 <?php
-session_start();
-
 include 'personnages/personnage.php';
 include 'personnages/guerrier.php';
 include 'personnages/mage.php';
 include 'personnages/archer.php';
 include 'personnages/pretre.php';
+session_start();
+
 
 // Variable de session pour suivre si les classes ont été choisies
 if (!isset($_SESSION['classes_choisies'])) {
